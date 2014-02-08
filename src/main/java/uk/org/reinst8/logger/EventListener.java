@@ -10,6 +10,7 @@ import java.io.BufferedWriter;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.TimeZone;
 
 public class EventListener extends ListenerAdapter {
 
@@ -50,12 +51,13 @@ public class EventListener extends ListenerAdapter {
 
     private String getHtmlMessageLine(Object user, String message, Channel channel) {
         SimpleDateFormat dateFormat = new SimpleDateFormat("[HH:mm:ss]");
+        dateFormat.setTimeZone(TimeZone.getTimeZone("GMT"));
         String time = dateFormat.format(new Date());
         String htmlString = "<span class=\"chatLine\"><span class=\"chatTime\">" + time + "</span>";
         message = StringEscapeUtils.escapeHtml4(message);
         if (user instanceof String) {
             user = StringEscapeUtils.escapeHtml4((String) user);
-            htmlString += " <span class=\"chatNick nickSystem\">" + user + "</span>";
+            htmlString += " <span class=\"chatNick nickSystem\">&lt;" + user + "&gt;</span>";
         } else if (user instanceof User) {
             User objectUser = (User) user;
             String attrs = (objectUser.getChannelsOpIn().contains(channel)) ? "@" : "";
