@@ -2,6 +2,7 @@ package uk.org.reinst8.logger;
 
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.pircbotx.Channel;
+import org.pircbotx.Colors;
 import org.pircbotx.User;
 import org.pircbotx.hooks.ListenerAdapter;
 import org.pircbotx.hooks.events.MessageEvent;
@@ -24,17 +25,26 @@ public class EventListener extends ListenerAdapter {
         System.out.println("WOO! " + event.getMessage());
         if (event.getChannel().getName().equalsIgnoreCase("#reinstate") || true) {
             if (event.getMessage().startsWith(".startmeeting") && userTest(event.getUser(), event.getChannel())) {
-                event.getUser().send().notice("Meeting mode enabled.");
-                loggerBot.setNick("Reinst8|Logging");
-                loggerBot.setMeetingMode(true);
-                appendMessage(getHtmlMessageLine("System", "Meeting initiated by " + event.getUser().getNick(), event.getChannel()), loggerBot.meetingLog);
-                return;
+                if (loggerBot.isMeetingMode()) {
+                    event.getUser().send().notice("Meeting mode is already enabled.");
+                } else {
+
+                    event.getUser().send().notice("Meeting mode enabled.");
+                    loggerBot.setNick("Reinst8|Logging");
+                    loggerBot.setMeetingMode(true);
+                    appendMessage(getHtmlMessageLine("System", "Meeting initiated by " + event.getUser().getNick(), event.getChannel()), loggerBot.meetingLog);
+                    return;
+                }
             } else if (event.getMessage().startsWith(".stopmeeting") && userTest(event.getUser(), event.getChannel())) {
-                event.getUser().send().notice("Meeting mode disabled.");
-                appendMessage(getHtmlMessageLine("System", "Meeting terminated by " + event.getUser().getNick(), event.getChannel()), loggerBot.meetingLog);
-                loggerBot.setNick("Reinst8|Log");
-                loggerBot.setMeetingMode(false);
-                return;
+                if (!loggerBot.isMeetingMode()) {
+                    event.getUser().send().notice("Meeting mode is already disabled.");
+                } else {
+                    event.getUser().send().notice("Meeting mode disabled.");
+                    appendMessage(getHtmlMessageLine("System", "Meeting terminated by " + event.getUser().getNick(), event.getChannel()), loggerBot.meetingLog);
+                    loggerBot.setNick("Reinst8|Log");
+                    loggerBot.setMeetingMode(false);
+                    return;
+                }
             }
         }
 
@@ -43,7 +53,7 @@ public class EventListener extends ListenerAdapter {
 
     private void logMessage(MessageEvent event) {
         if (loggerBot.isMeetingMode()) {
-            if (loggerBot.meetingLog != null) {
+            if (loggerBot.meetingLog != null && event.getMessage() != null) {
                 appendMessage(getHtmlMessageLine(event.getUser(), event.getMessage(), event.getChannel()), loggerBot.meetingLog);
             }
         }
@@ -54,7 +64,10 @@ public class EventListener extends ListenerAdapter {
         dateFormat.setTimeZone(TimeZone.getTimeZone("GMT"));
         String time = dateFormat.format(new Date());
         String htmlString = "<span class=\"chatLine\"><span class=\"chatTime\">" + time + "</span>";
-        message = StringEscapeUtils.escapeHtml4(message);
+        message = message.replace("\u0002", "*");
+        message = message.replace("\u001D", "/");
+        message = message.replace("\u001F", "_");
+        message = StringEscapeUtils.escapeHtml4(Colors.removeFormattingAndColors(message));
         if (user instanceof String) {
             user = StringEscapeUtils.escapeHtml4((String) user);
             htmlString += " <span class=\"chatNick nickSystem\">&lt;" + user + "&gt;</span>";
