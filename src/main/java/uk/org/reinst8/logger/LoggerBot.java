@@ -24,12 +24,12 @@ public class LoggerBot {
                 .setLogin("LoggerBot")
                 .setAutoNickChange(true)
                 .setCapEnabled(true)
-                .setNickservPassword(System.getenv("LOGGER-NSP"))
+                .setNickservPassword(System.getenv("LOGGER_NSP"))
                 .setCapEnabled(false)
                 .addListener(new EventListener(this))
-                .setServerHostname(System.getenv("LOGGER-HOST"))
-                .setServerPort(Integer.parseInt(System.getenv("LOGGER-PORT")))
-                .setServerPassword(System.getenv("LOGGER-SERVERPASS"))
+                .setServerHostname(System.getenv("LOGGER_HOST"))
+                .setServerPort(Integer.parseInt(System.getenv("LOGGER_PORT")))
+                .setServerPassword(System.getenv("LOGGER_SERVERPASS"))
                 .addAutoJoinChannel("#reinstate")
                 .buildConfiguration();
         try {
@@ -79,8 +79,8 @@ public class LoggerBot {
     }
 
     public static void main(String[] args) {
-        if (System.getenv("LOGGER-NSP") == null) {
-            System.out.print("You must set the env variables: LOGGER-NSP, LOGGER-HOST, LOGGER-PORT, LOGGER-SERVERPASS");
+        if (System.getenv("LOGGER_NSP") == null) {
+            System.out.print("You must set the env variables: LOGGER_NSP, LOGGER_HOST, LOGGER_PORT, LOGGER_SERVERPASS");
             System.exit(-1);
         }
         new LoggerBot();
