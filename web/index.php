@@ -1,3 +1,4 @@
+<?php require_once("logViewer.php"); ?>
 <!DOCTYPE html>
 <html class="no-js">
 <head>
@@ -8,8 +9,9 @@
     <meta name="viewport" content="width=device-width">
     <link rel="stylesheet" href="css/main.css">
     <link rel="stylesheet" href="css/normalize.min.css">
-    <link href='http://fonts.googleapis.com/css?family=Roboto:700' rel='stylesheet' type='text/css'>
-    <link href="//cdnjs.cloudflare.com/ajax/libs/font-awesome/4.0.3/css/font-awesome.min.css" type="text/css" rel="stylesheet">
+    <link href='http://fonts.googleapis.com/css?family=Roboto:400' rel='stylesheet' type='text/css'>
+    <link href="//cdnjs.cloudflare.com/ajax/libs/font-awesome/4.0.3/css/font-awesome.min.css" type="text/css"
+          rel="stylesheet">
     <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/ink/2.2.1/css/ink-min.css">
     <script src="js/vendor/modernizr-2.6.2.min.js"></script>
 </head>
@@ -32,14 +34,21 @@
         <nav class="ink-navigation">
             <ul class="menu vertical blue rounded shadowed">
                 <li class="nav-header">Select log file</li>
-                <li><a href="#">Item</a></li>
+                <?php foreach ($dateList as $date => $active): ?>
+                    <li <?php echo ($active) ? 'class="active"' : '' ?>>
+                        <a href="/?file=<?php echo($date); ?>"><?php echo date("l, jS F Y", $date) ?></a>
+                    </li>
+                <?php endforeach; ?>
             </ul>
         </nav>
     </div>
-    <div class="grid-50 chatLog"><span class="chatLine"><span class="chatTime">[19:06:22]</span> <span class="chatNick nickSystem">&lt;System&gt;</span> <span class="chatMessage">Meeting initiated by lol768</span></span>
-        <span class="chatLine"><span class="chatTime">[19:06:25]</span> <span class="chatNick nickUser nickVoice">&lt;+lol768&gt;</span> <span class="chatMessage">wootext</span></span>
-        <span class="chatLine"><span class="chatTime">[19:06:28]</span> <span class="chatNick nickUser nickVoice">&lt;+lol768&gt;</span> <span class="chatMessage">*wootext*</span></span>
-        <span class="chatLine"><span class="chatTime">[19:07:42]</span> <span class="chatNick nickSystem">&lt;System&gt;</span> <span class="chatMessage">Meeting terminated by lol768</span></span>
+    <div class="grid-50">
+        <?php if (isset($selectedFile) && !validFile($selectedFile)): ?>
+            <h3>Invalid file</h3>
+            <p>Please select a valid file from the list on the left.</p>
+        <?php else: ?>
+            <?php echo (empty($selectedFile)) ? file_get_contents("intro.htm") : '<h3>Viewing log from ' . date("l, jS F Y", $selectedFile) . '</h3><div class="chatLog">' . file_get_contents($logDirectory . $fileList[$selectedFile]) . "</div>"; ?>
+        <?php endif; ?>
     </div>
 </main>
 

@@ -32,7 +32,7 @@ public class EventListener extends ListenerAdapter {
                     event.getUser().send().notice("Meeting mode enabled.");
                     loggerBot.setNick("Reinst8|Logging");
                     loggerBot.setMeetingMode(true);
-                    appendMessage(getHtmlMessageLine("System", "Meeting initiated by " + event.getUser().getNick() + " on %DATE%.", event.getChannel()), loggerBot.meetingLog);
+                    appendMessage(getHtmlMessageLine("System", "Meeting initiated by " + event.getUser().getNick() + ".", event.getChannel()), loggerBot.meetingLog);
                     return;
                 }
             } else if (event.getMessage().startsWith(".stopmeeting") && userTest(event.getUser(), event.getChannel())) {
