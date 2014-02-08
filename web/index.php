@@ -40,7 +40,7 @@
                 <li class="nav-header">Select log file</li>
                 <?php foreach ($dateList as $date => $active): ?>
                     <li <?php echo ($active) ? 'class="active"' : '' ?>>
-                        <a href="/?file=<?php echo($date); ?>"><?php echo date("l, jS F Y", $date) ?></a>
+                        <a href="?file=<?php echo($date); ?>"><?php echo date("l, jS F Y", $date) ?></a>
                     </li>
                 <?php endforeach; ?>
                 <?php if (count($dateList) == 0): ?>
