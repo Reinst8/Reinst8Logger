@@ -33,3 +33,9 @@ function validFile($fn) {
     global $fileList;
     return (array_key_exists($fn, $fileList));
 }
+
+function nextMeeting() {
+    $meetingMonday = strtotime("Next Monday");
+    $meetingThursday = strtotime("Next Thursday");
+    return ($meetingMonday < $meetingThursday) ? $meetingMonday : $meetingThursday;
+}

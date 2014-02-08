@@ -4,7 +4,7 @@
 <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-    <title></title>
+    <title>Reinst8 Logs</title>
     <meta name="description" content="">
     <meta name="viewport" content="width=device-width">
     <link rel="stylesheet" href="css/main.css">
@@ -14,6 +14,7 @@
           rel="stylesheet">
     <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/ink/2.2.1/css/ink-min.css">
     <script src="js/vendor/modernizr-2.6.2.min.js"></script>
+
 </head>
 <body>
 <div class="header grid-100">
@@ -24,7 +25,10 @@
             <li><a href="http://reinst8.org.uk/">Official Site</a></li>
             <li><a href="http://www.reddit.com/r/ReinstateArticle8">Reddit</a></li>
             <li><a href="http://www.twitter.com/Reinst8">Twitter</a></li>
+            <li><a href="http://webchat.snoonet.org/reinstate">Chat</a></li>
+            <li><a href="http://tinyletter.com/Reinstate">Newsletter</a></li>
         </ul>
+
     </nav>
 </div>
 
@@ -39,6 +43,16 @@
                         <a href="/?file=<?php echo($date); ?>"><?php echo date("l, jS F Y", $date) ?></a>
                     </li>
                 <?php endforeach; ?>
+                <?php if (count($dateList) == 0): ?>
+                    <li class="active"><a href="#">No logs are available yet. </a></li>
+                <?php endif; ?>
+            </ul>
+        </nav>
+
+        <nav class="ink-navigation">
+            <ul class="menu vertical blue rounded shadowed">
+                <li class="nav-header">Next meeting</li>
+                <li><a href="http://webchat.snoonet.org/reinstate">Next meeting on <?php echo date("l, jS M Y", nextMeeting()) ?> at 20:00 UTC.<br />#Reinstate on SnooNet.</a></li>
             </ul>
         </nav>
     </div>
