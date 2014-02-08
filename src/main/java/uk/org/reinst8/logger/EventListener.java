@@ -1,14 +1,15 @@
 package uk.org.reinst8.logger;
 
+import org.apache.commons.lang3.StringEscapeUtils;
 import org.pircbotx.Channel;
 import org.pircbotx.User;
-import org.pircbotx.hooks.Event;
-import org.pircbotx.hooks.Listener;
 import org.pircbotx.hooks.ListenerAdapter;
-import org.pircbotx.hooks.events.DisconnectEvent;
 import org.pircbotx.hooks.events.MessageEvent;
 
+import java.io.BufferedWriter;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 public class EventListener extends ListenerAdapter {
 
@@ -20,14 +21,19 @@ public class EventListener extends ListenerAdapter {
 
     public void onMessage(MessageEvent event) throws Exception {
         System.out.println("WOO! " + event.getMessage());
-        if (event.getChannel().getName().equalsIgnoreCase("#reinstate") || true) {
+        if (event.getChannel().getName().equalsIgnoreCase("#reinstate")) {
             if (event.getMessage().startsWith(".startmeeting") && userTest(event.getUser(), event.getChannel())) {
-
                 event.getUser().send().notice("Meeting mode enabled.");
+                loggerBot.setNick("Reinst8|Logging");
                 loggerBot.setMeetingMode(true);
+                appendMessage(getHtmlMessageLine("System", "Meeting initiated by " + event.getUser().getNick(), event.getChannel()), loggerBot.meetingLog);
+                return;
             } else if (event.getMessage().startsWith(".stopmeeting") && userTest(event.getUser(), event.getChannel())) {
                 event.getUser().send().notice("Meeting mode disabled.");
+                appendMessage(getHtmlMessageLine("System", "Meeting terminated by " + event.getUser().getNick(), event.getChannel()), loggerBot.meetingLog);
+                loggerBot.setNick("Reinst8|Log");
                 loggerBot.setMeetingMode(false);
+                return;
             }
         }
 
@@ -37,14 +43,43 @@ public class EventListener extends ListenerAdapter {
     private void logMessage(MessageEvent event) {
         if (loggerBot.isMeetingMode()) {
             if (loggerBot.meetingLog != null) {
-                String msg = "<" + event.getUser().getNick() + "> " + event.getMessage() + "\n";
-                try {
-                    loggerBot.meetingLog.append(msg);
-                    loggerBot.meetingLog.flush();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
+                appendMessage(getHtmlMessageLine(event.getUser(), event.getMessage(), event.getChannel()), loggerBot.meetingLog);
             }
+        }
+    }
+
+    private String getHtmlMessageLine(Object user, String message, Channel channel) {
+        SimpleDateFormat dateFormat = new SimpleDateFormat("[HH:mm:ss]");
+        String time = dateFormat.format(new Date());
+        String htmlString = "<span class=\"chatLine\"><span class=\"chatTime\">" + time + "</span>";
+        message = StringEscapeUtils.escapeHtml4(message);
+        if (user instanceof String) {
+            user = StringEscapeUtils.escapeHtml4((String) user);
+            htmlString += " <span class=\"chatNick nickSystem\">" + user + "</span>";
+        } else if (user instanceof User) {
+            User objectUser = (User) user;
+            String attrs = (objectUser.getChannelsOpIn().contains(channel)) ? "@" : "";
+            attrs += (objectUser.getChannelsVoiceIn().contains(channel)) ? "+" : "";
+
+            String classes = "chatNick nickUser";
+            classes += (objectUser.getChannelsOpIn().contains(channel)) ? " nickOp" : "";
+            classes += (objectUser.getChannelsVoiceIn().contains(channel)) ? " nickVoice" : "";
+
+            htmlString += " <span class=\"" + classes + "\">&lt;" + attrs + user + "&gt;</span>";
+        } else {
+            throw new UnsupportedOperationException("You must supply a String or User user object.");
+        }
+
+        htmlString += " <span class=\"chatMessage\">" + message + "</span></span>";
+        return htmlString;
+    }
+
+    private void appendMessage(String msg, BufferedWriter writer) {
+        try {
+            writer.append(msg);
+            writer.flush();
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 
