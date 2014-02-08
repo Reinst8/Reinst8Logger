@@ -32,7 +32,7 @@ public class EventListener extends ListenerAdapter {
                     event.getUser().send().notice("Meeting mode enabled.");
                     loggerBot.setNick("Reinst8|Logging");
                     loggerBot.setMeetingMode(true);
-                    appendMessage(getHtmlMessageLine("System", "Meeting initiated by " + event.getUser().getNick(), event.getChannel()), loggerBot.meetingLog);
+                    appendMessage(getHtmlMessageLine("System", "Meeting initiated by " + event.getUser().getNick() + " on %DATE%.", event.getChannel()), loggerBot.meetingLog);
                     return;
                 }
             } else if (event.getMessage().startsWith(".stopmeeting") && userTest(event.getUser(), event.getChannel())) {
@@ -40,7 +40,7 @@ public class EventListener extends ListenerAdapter {
                     event.getUser().send().notice("Meeting mode is already disabled.");
                 } else {
                     event.getUser().send().notice("Meeting mode disabled.");
-                    appendMessage(getHtmlMessageLine("System", "Meeting terminated by " + event.getUser().getNick(), event.getChannel()), loggerBot.meetingLog);
+                    appendMessage(getHtmlMessageLine("System", "Meeting terminated by " + event.getUser().getNick() + ".", event.getChannel()), loggerBot.meetingLog);
                     loggerBot.setNick("Reinst8|Log");
                     loggerBot.setMeetingMode(false);
                     return;
@@ -62,7 +62,10 @@ public class EventListener extends ListenerAdapter {
     private String getHtmlMessageLine(Object user, String message, Channel channel) {
         SimpleDateFormat dateFormat = new SimpleDateFormat("[HH:mm:ss]");
         dateFormat.setTimeZone(TimeZone.getTimeZone("GMT"));
-        String time = dateFormat.format(new Date());
+        Date currentDate = new Date();
+        String time = dateFormat.format(currentDate);
+        dateFormat = new SimpleDateFormat("dd MMMM yyyy");
+        message = message.replace("%DATE%", dateFormat.format(currentDate));
         String htmlString = "<span class=\"chatLine\"><span class=\"chatTime\">" + time + "</span>";
         message = message.replace("\u0002", "*");
         message = message.replace("\u001D", "/");
