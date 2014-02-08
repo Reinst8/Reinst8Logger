@@ -21,7 +21,7 @@ public class EventListener extends ListenerAdapter {
 
     public void onMessage(MessageEvent event) throws Exception {
         System.out.println("WOO! " + event.getMessage());
-        if (event.getChannel().getName().equalsIgnoreCase("#reinstate")) {
+        if (event.getChannel().getName().equalsIgnoreCase("#reinstate") || true) {
             if (event.getMessage().startsWith(".startmeeting") && userTest(event.getUser(), event.getChannel())) {
                 event.getUser().send().notice("Meeting mode enabled.");
                 loggerBot.setNick("Reinst8|Logging");
@@ -65,7 +65,7 @@ public class EventListener extends ListenerAdapter {
             classes += (objectUser.getChannelsOpIn().contains(channel)) ? " nickOp" : "";
             classes += (objectUser.getChannelsVoiceIn().contains(channel)) ? " nickVoice" : "";
 
-            htmlString += " <span class=\"" + classes + "\">&lt;" + attrs + user + "&gt;</span>";
+            htmlString += " <span class=\"" + classes + "\">&lt;" + attrs + objectUser.getNick() + "&gt;</span>";
         } else {
             throw new UnsupportedOperationException("You must supply a String or User user object.");
         }
@@ -76,7 +76,7 @@ public class EventListener extends ListenerAdapter {
 
     private void appendMessage(String msg, BufferedWriter writer) {
         try {
-            writer.append(msg);
+            writer.append(msg).append("\n");
             writer.flush();
         } catch (IOException e) {
             e.printStackTrace();
