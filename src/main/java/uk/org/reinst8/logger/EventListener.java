@@ -5,6 +5,7 @@ import org.pircbotx.Channel;
 import org.pircbotx.Colors;
 import org.pircbotx.User;
 import org.pircbotx.hooks.ListenerAdapter;
+import org.pircbotx.hooks.events.ActionEvent;
 import org.pircbotx.hooks.events.MessageEvent;
 
 import java.io.BufferedWriter;
@@ -23,7 +24,7 @@ public class EventListener extends ListenerAdapter {
 
     public void onMessage(MessageEvent event) throws Exception {
         System.out.println("WOO! " + event.getMessage());
-        if (event.getChannel().getName().equalsIgnoreCase("#reinstate") || true) {
+        if (event.getChannel().getName().equalsIgnoreCase("#reinstate")) {
             if (event.getMessage().startsWith(".startmeeting") && userTest(event.getUser(), event.getChannel())) {
                 if (loggerBot.isMeetingMode()) {
                     event.getUser().send().notice("Meeting mode is already enabled.");
@@ -32,7 +33,7 @@ public class EventListener extends ListenerAdapter {
                     event.getUser().send().notice("Meeting mode enabled.");
                     loggerBot.setNick("Reinst8|Logging");
                     loggerBot.setMeetingMode(true);
-                    appendMessage(getHtmlMessageLine("System", "Meeting initiated by " + event.getUser().getNick() + ".", event.getChannel()), loggerBot.meetingLog);
+                    appendMessage(getHtmlMessageLine("System", "Meeting initiated by " + event.getUser().getNick() + ".", event.getChannel(), false), loggerBot.meetingLog);
                     return;
                 }
             } else if (event.getMessage().startsWith(".stopmeeting") && userTest(event.getUser(), event.getChannel())) {
@@ -40,7 +41,7 @@ public class EventListener extends ListenerAdapter {
                     event.getUser().send().notice("Meeting mode is already disabled.");
                 } else {
                     event.getUser().send().notice("Meeting mode disabled.");
-                    appendMessage(getHtmlMessageLine("System", "Meeting terminated by " + event.getUser().getNick() + ".", event.getChannel()), loggerBot.meetingLog);
+                    appendMessage(getHtmlMessageLine("System", "Meeting terminated by " + event.getUser().getNick() + ".", event.getChannel(), false), loggerBot.meetingLog);
                     loggerBot.setNick("Reinst8|Log");
                     loggerBot.setMeetingMode(false);
                     return;
@@ -51,15 +52,30 @@ public class EventListener extends ListenerAdapter {
         logMessage(event);
     }
 
+    public void onAction(ActionEvent event) {
+        if (event.getChannel().getName().equalsIgnoreCase("#reinstate")) {
+            System.out.println("Got action! " + event.getMessage());
+            logAction(event);
+        }
+    }
+
     private void logMessage(MessageEvent event) {
         if (loggerBot.isMeetingMode()) {
             if (loggerBot.meetingLog != null && event.getMessage() != null) {
-                appendMessage(getHtmlMessageLine(event.getUser(), event.getMessage(), event.getChannel()), loggerBot.meetingLog);
+                appendMessage(getHtmlMessageLine(event.getUser(), event.getMessage(), event.getChannel(), false), loggerBot.meetingLog);
             }
         }
     }
 
-    private String getHtmlMessageLine(Object user, String message, Channel channel) {
+    private void logAction(ActionEvent event) {
+        if (loggerBot.isMeetingMode()) {
+            if (loggerBot.meetingLog != null && event.getMessage() != null) {
+                appendMessage(getHtmlMessageLine(event.getUser(), event.getMessage(), event.getChannel(), true), loggerBot.meetingLog);
+            }
+        }
+    }
+
+    private String getHtmlMessageLine(Object user, String message, Channel channel, boolean action) {
         SimpleDateFormat dateFormat = new SimpleDateFormat("[HH:mm:ss]");
         dateFormat.setTimeZone(TimeZone.getTimeZone("GMT"));
         Date currentDate = new Date();
@@ -67,13 +83,20 @@ public class EventListener extends ListenerAdapter {
         dateFormat = new SimpleDateFormat("dd MMMM yyyy");
         message = message.replace("%DATE%", dateFormat.format(currentDate));
         String htmlString = "<span class=\"chatLine\"><span class=\"chatTime\">" + time + "</span>";
+        if (action) {
+            htmlString += " <span class=\"actionMessage\">*";
+        }
         message = message.replace("\u0002", "*");
         message = message.replace("\u001D", "/");
         message = message.replace("\u001F", "_");
         message = StringEscapeUtils.escapeHtml4(Colors.removeFormattingAndColors(message));
         if (user instanceof String) {
             user = StringEscapeUtils.escapeHtml4((String) user);
-            htmlString += " <span class=\"chatNick nickSystem\">&lt;" + user + "&gt;</span>";
+            if (!action) {
+                htmlString += " <span class=\"chatNick nickSystem\">&lt;" + user + "&gt;</span>";
+            } else {
+                htmlString += " <span class=\"chatNick nickSystem\">" + user + "</span>";
+            }
         } else if (user instanceof User) {
             User objectUser = (User) user;
             String attrs = (objectUser.getChannelsOpIn().contains(channel)) ? "@" : "";
@@ -82,8 +105,11 @@ public class EventListener extends ListenerAdapter {
             String classes = "chatNick nickUser";
             classes += (objectUser.getChannelsOpIn().contains(channel)) ? " nickOp" : "";
             classes += (objectUser.getChannelsVoiceIn().contains(channel)) ? " nickVoice" : "";
-
-            htmlString += " <span class=\"" + classes + "\">&lt;" + attrs + objectUser.getNick() + "&gt;</span>";
+            if (!action) {
+                htmlString += " <span class=\"" + classes + "\">&lt;" + attrs + objectUser.getNick() + "&gt;</span>";
+            } else {
+                htmlString += " <span class=\"" + classes + "\">" + attrs + objectUser.getNick() + "</span>";
+            }
         } else {
             throw new UnsupportedOperationException("You must supply a String or User user object.");
         }
