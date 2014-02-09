@@ -24,7 +24,7 @@ public class EventListener extends ListenerAdapter {
 
     public void onMessage(MessageEvent event) throws Exception {
         System.out.println("WOO! " + event.getMessage());
-        if (event.getChannel().getName().equalsIgnoreCase("#reinstate")) {
+        if (event.getChannel().getName().equalsIgnoreCase("#reinstate") || true) {
             if (event.getMessage().startsWith(".startmeeting") && userTest(event.getUser(), event.getChannel())) {
                 if (loggerBot.isMeetingMode()) {
                     event.getUser().send().notice("Meeting mode is already enabled.");
@@ -53,7 +53,7 @@ public class EventListener extends ListenerAdapter {
     }
 
     public void onAction(ActionEvent event) {
-        if (event.getChannel().getName().equalsIgnoreCase("#reinstate")) {
+        if (event.getChannel().getName().equalsIgnoreCase("#reinstate") || true) {
             System.out.println("Got action! " + event.getMessage());
             logAction(event);
         }
@@ -115,6 +115,9 @@ public class EventListener extends ListenerAdapter {
         }
 
         htmlString += " <span class=\"chatMessage\">" + message + "</span></span>";
+        if (action) {
+            htmlString += "</span>";
+        }
         return htmlString;
     }
 
