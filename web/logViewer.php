@@ -36,7 +36,21 @@ function validFile($fn) {
 
 function nextMeeting() {
     date_default_timezone_set('UTC');
-    $meetingMonday = strtotime("Next Monday 20:00");
-    $meetingThursday = strtotime("Next Thursday 20:00");
-    return ($meetingMonday < $meetingThursday) ? $meetingMonday : $meetingThursday;
+	$dayOfWeek = date('N');
+	$hr = date('G');
+	if ($dayOfWeek == 1) {
+		//Monday
+		if ($hr < 20) {
+			return strtotime('today 20:00');
+		}
+	} else if ($dayOfWeek == 4) {
+		//Thursday
+		if ($hr < 20) {
+			return strtotime('today 20:00');
+		}
+	} else {
+		$nextMonday = strtotime('Next Monday 20:00');
+		$nextThursday = strtotime('Next Thursday 20:00');
+		return ($nextMonday < $nextThursday) ? $nextMonday : $nextThursday;
+	}
 }
