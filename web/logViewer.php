@@ -35,7 +35,8 @@ function validFile($fn) {
 }
 
 function nextMeeting() {
-    $meetingMonday = strtotime("Next Monday");
-    $meetingThursday = strtotime("Next Thursday");
+    date_default_timezone_set('UTC');
+    $meetingMonday = strtotime("Next Monday 20:00");
+    $meetingThursday = strtotime("Next Thursday 20:00");
     return ($meetingMonday < $meetingThursday) ? $meetingMonday : $meetingThursday;
 }
