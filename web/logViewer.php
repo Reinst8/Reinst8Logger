@@ -38,16 +38,12 @@ function nextMeeting() {
     date_default_timezone_set('UTC');
 	$dayOfWeek = date('N');
 	$hr = date('G');
-	if ($dayOfWeek == 1) {
+	if ($dayOfWeek == 1 && $hr < 20) {
 		//Monday
-		if ($hr < 20) {
-			return strtotime('today 20:00');
-		}
-	} else if ($dayOfWeek == 4) {
+		return strtotime('today 20:00');
+	} else if ($dayOfWeek == 4 && $hr < 20) {
 		//Thursday
-		if ($hr < 20) {
-			return strtotime('today 20:00');
-		}
+		return strtotime('today 20:00');
 	} else {
 		$nextMonday = strtotime('Next Monday 20:00');
 		$nextThursday = strtotime('Next Thursday 20:00');
