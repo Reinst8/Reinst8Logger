@@ -23,8 +23,7 @@ public class EventListener extends ListenerAdapter {
     }
 
     public void onMessage(MessageEvent event) throws Exception {
-        System.out.println("WOO! " + event.getMessage());
-        if (event.getChannel().getName().equalsIgnoreCase("#reinstate") || true) {
+        if (event.getChannel().getName().equalsIgnoreCase("#reinst8")) {
             if (event.getMessage().startsWith(".startmeeting") && userTest(event.getUser(), event.getChannel())) {
                 if (loggerBot.isMeetingMode()) {
                     event.getUser().send().notice("Meeting mode is already enabled.");
@@ -42,7 +41,7 @@ public class EventListener extends ListenerAdapter {
                 } else {
                     event.getUser().send().notice("Meeting mode disabled.");
                     appendMessage(getHtmlMessageLine("System", "Meeting terminated by " + event.getUser().getNick() + ".", event.getChannel(), false), loggerBot.meetingLog);
-                    loggerBot.setNick("Reinst8|Log");
+                    loggerBot.setNick("Reinst8Bot");
                     loggerBot.setMeetingMode(false);
                     return;
                 }
@@ -53,7 +52,7 @@ public class EventListener extends ListenerAdapter {
     }
 
     public void onAction(ActionEvent event) {
-        if (event.getChannel().getName().equalsIgnoreCase("#reinstate") || true) {
+        if (event.getChannel().getName().equalsIgnoreCase("#reinst8")) {
             System.out.println("Got action! " + event.getMessage());
             logAction(event);
         }
@@ -131,6 +130,6 @@ public class EventListener extends ListenerAdapter {
     }
 
     private boolean userTest(User user, Channel channel) {
-        return channel.isOp(user) || channel.hasVoice(user) || user.getNick().equalsIgnoreCase("lol768"); //temp backdoor
+        return channel.isOp(user) || channel.hasVoice(user);
     }
 }
